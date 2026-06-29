@@ -7,6 +7,7 @@ const tileCount = canvas.width / gridSize;
 let snake = [{ x: 10, y: 10 }];
 let direction = { x: 0, y: 0 };
 let food = { x: Math.floor(Math.random() * tileCount), y: Math.floor(Math.random() * tileCount) };
+let score = 0;
 
 document.addEventListener('keydown', changeDirection);
 
@@ -37,21 +38,16 @@ function update() {
 
     if (head.x === food.x && head.y === food.y) {
         food = { x: Math.floor(Math.random() * tileCount), y: Math.floor(Math.random() * tileCount) };
+        score += 10;
     } else {
         snake.pop();
     }
 
     snake.unshift(head);
 
-    if (
-        head.x < 0 ||
-        head.x >= tileCount ||
-        head.y < 0 ||
-        head.y >= tileCount
-    ) {
-        alert('Game Over');
-        document.location.reload();
-    }
+    // Wrap around the edges of the canvas
+    head.x = (head.x + tileCount) % tileCount;
+    head.y = (head.y + tileCount) % tileCount;
 
     for (let i = 1; i < snake.length; i++) {
         if (head.x === snake[i].x && head.y === snake[i].y) {
@@ -71,6 +67,11 @@ function draw() {
     snake.forEach(segment => {
         ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize, gridSize);
     });
+
+    // Draw score
+    ctx.fillStyle = 'white';
+    ctx.font = '20px Arial';
+    ctx.fillText(`Score: ${score}`, 10, 20);
 }
 
 gameLoop();
