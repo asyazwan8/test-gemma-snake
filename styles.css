@@ -10,3 +10,11 @@ body {
 canvas {
     border: 1px solid white;
 }
+
+.snake-segment {
+    fill: #32CD32; /* Lime Green */
+}
+
+.food {
+    fill: #FF69B4; /* Hot Pink */
+}

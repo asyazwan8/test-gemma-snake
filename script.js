@@ -1,13 +1,12 @@
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
+const gameSVG = document.getElementById('gameSVG');
+const tileCount = 40;
+const gridSize = 10;
 
-const gridSize = 20;
-const tileCount = canvas.width / gridSize;
-
-let snake = [{ x: 10, y: 10 }];
+let snake = [{ x: 20, y: 20 }];
 let direction = { x: 0, y: 0 };
 let food = { x: Math.floor(Math.random() * tileCount), y: Math.floor(Math.random() * tileCount) };
 let score = 0;
+let speed = 150;
 
 document.addEventListener('keydown', changeDirection);
 
@@ -30,7 +29,7 @@ function changeDirection(event) {
 function gameLoop() {
     update();
     draw();
-    setTimeout(gameLoop, 100);
+    setTimeout(gameLoop, speed);
 }
 
 function update() {
@@ -39,15 +38,22 @@ function update() {
     if (head.x === food.x && head.y === food.y) {
         food = { x: Math.floor(Math.random() * tileCount), y: Math.floor(Math.random() * tileCount) };
         score += 10;
+        speed -= 5; // Increase speed
     } else {
         snake.pop();
     }
 
     snake.unshift(head);
 
-    // Wrap around the edges of the canvas
-    head.x = (head.x + tileCount) % tileCount;
-    head.y = (head.y + tileCount) % tileCount;
+    if (
+        head.x < 0 ||
+        head.x >= tileCount ||
+        head.y < 0 ||
+        head.y >= tileCount
+    ) {
+        alert('Game Over');
+        document.location.reload();
+    }
 
     for (let i = 1; i < snake.length; i++) {
         if (head.x === snake[i].x && head.y === snake[i].y) {
@@ -58,20 +64,34 @@ function update() {
 }
 
 function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    gameSVG.innerHTML = ''; // Clear canvas
 
-    ctx.fillStyle = 'red';
-    ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize, gridSize);
-
-    ctx.fillStyle = 'lime';
+    // Draw snake
     snake.forEach(segment => {
-        ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize, gridSize);
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('x', segment.x * gridSize);
+        rect.setAttribute('y', segment.y * gridSize);
+        rect.setAttribute('width', gridSize - 1);
+        rect.setAttribute('height', gridSize - 1);
+        rect.classList.add('snake-segment');
+        gameSVG.appendChild(rect);
     });
 
+    // Draw food
+    const foodRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    foodRect.setAttribute('x', food.x * gridSize);
+    foodRect.setAttribute('y', food.y * gridSize);
+    foodRect.setAttribute('width', gridSize - 1);
+    foodRect.setAttribute('height', gridSize - 1);
+    foodRect.classList.add('food');
+    gameSVG.appendChild(foodRect);
+
     // Draw score
-    ctx.fillStyle = 'white';
-    ctx.font = '20px Arial';
-    ctx.fillText(`Score: ${score}`, 10, 20);
+    const scoreText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    scoreText.setAttribute('x', 5);
+    scoreText.setAttribute('y', 15);
+    scoreText.textContent = `Score: ${score}`;
+    gameSVG.appendChild(scoreText);
 }
 
 gameLoop();
