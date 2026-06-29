@@ -1,20 +1,10 @@
 body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
     margin: 0;
-    background-color: #282c34;
+    overflow: hidden;
+    background-image: url('https://example.com/mario-background.png');
+    background-size: cover;
 }
 
-canvas {
-    border: 1px solid white;
-}
-
-.snake-segment {
-    fill: #32CD32; /* Lime Green */
-}
-
-.food {
-    fill: #FF69B4; /* Hot Pink */
+#gameCanvas {
+    background-color: transparent;
 }
